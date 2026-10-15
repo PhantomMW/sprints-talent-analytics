@@ -1,0 +1,95 @@
+{
+  "input_records": 26,
+  "input_columns": 18,
+  "structural_repairs": [
+    {
+      "line_number": 26,
+      "learner_id": "LRN-1023",
+      "original_fields": 19,
+      "final_fields": 18
+    }
+  ],
+  "duplicate_rows_removed": 2,
+  "invalid_engagement_values": [
+    {
+      "learner_id": "LRN-1002",
+      "original_value": 999.0,
+      "action": "Converted to missing value"
+    },
+    {
+      "learner_id": "LRN-1006",
+      "original_value": -20.0,
+      "action": "Converted to missing value"
+    },
+    {
+      "learner_id": "LRN-1012",
+      "original_value": 1500.0,
+      "action": "Converted to missing value"
+    },
+    {
+      "learner_id": "LRN-1020",
+      "original_value": -5.0,
+      "action": "Converted to missing value"
+    }
+  ],
+  "numeric_conversion_failures": {
+    "engagement_score": 0,
+    "module_1_score": 0,
+    "module_2_score": 0,
+    "module_3_score": 0,
+    "module_4_score": 0,
+    "module_5_score": 0,
+    "module_6_score": 0,
+    "module_7_score": 0,
+    "module_8_score": 0,
+    "module_9_score": 0,
+    "module_10_score": 0,
+    "capstone_score": 0
+  },
+  "date_conversion_failures": {
+    "enrollment_date": 0,
+    "graduation_date": 0
+  },
+  "missing_values_before_cleaning": {
+    "learner_id": 0,
+    "cohort_id": 0,
+    "enrollment_date": 0,
+    "graduation_date": 2,
+    "demographic_group": 0,
+    "track_name": 0,
+    "engagement_score": 1,
+    "module_1_score": 0,
+    "module_2_score": 1,
+    "module_3_score": 1,
+    "module_4_score": 0,
+    "module_5_score": 2,
+    "module_6_score": 3,
+    "module_7_score": 2,
+    "module_8_score": 3,
+    "module_9_score": 3,
+    "module_10_score": 3,
+    "capstone_score": 3
+  },
+  "missing_values_after_cleaning": {
+    "learner_id": 0,
+    "cohort_id": 0,
+    "enrollment_date": 0,
+    "graduation_date": 2,
+    "demographic_group": 0,
+    "track_name": 0,
+    "engagement_score": 5,
+    "module_1_score": 0,
+    "module_2_score": 1,
+    "module_3_score": 1,
+    "module_4_score": 0,
+    "module_5_score": 2,
+    "module_6_score": 3,
+    "module_7_score": 2,
+    "module_8_score": 3,
+    "module_9_score": 3,
+    "module_10_score": 3,
+    "capstone_score": 3
+  },
+  "output_records": 24,
+  "output_columns": 18
+}

@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Sprints Talent Analytics Dashboard</title>
+
+    <script src="https://cdn.plot.ly/plotly-3.1.0.min.js"></script>
+
+    <style>
+        :root {
+            --background: #f4f7fb;
+            --surface: #ffffff;
+            --primary: #176b87;
+            --secondary: #2a9d8f;
+            --text: #172b4d;
+            --muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--background);
+            color: var(--text);
+        }
+
+        .header {
+            padding: 32px 5%;
+            color: white;
+            background: linear-gradient(
+                120deg,
+                #153e5c,
+                #176b87,
+                #2a9d8f
+            );
+        }
+
+        .header h1 {
+            margin: 0 0 10px;
+            font-size: 30px;
+        }
+
+        .header p {
+            margin: 0;
+            color: #e0f2fe;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 1500px;
+            margin: 26px auto;
+        }
+
+        .section-title {
+            margin: 28px 0 15px;
+            font-size: 21px;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(200px, 1fr));
+            gap: 18px;
+            padding: 22px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 9px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background: white;
+            color: var(--text);
+            font-size: 14px;
+        }
+
+        .button-row {
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            background: var(--primary);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
+            margin-top: 20px;
+        }
+
+        .kpi-card {
+            padding: 22px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
+        }
+
+        .kpi-label {
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .kpi-value {
+            margin-top: 12px;
+            font-size: 30px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .kpi-description {
+            margin-top: 8px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .chart-card {
+            min-width: 0;
+            padding: 18px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
+        }
+
+        .chart-card h3 {
+            margin: 4px 8px;
+            font-size: 16px;
+        }
+
+        .chart {
+            width: 100%;
+            height: 390px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 20px;
+            padding: 18px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 13px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        th {
+            background: #f1f5f9;
+            color: var(--text);
+        }
+
+        tr:hover td {
+            background: #f8fafc;
+        }
+
+        .footer {
+            padding: 30px 15px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .status {
+            margin-top: 12px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        @media (max-width: 900px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .full-width {
+                grid-column: auto;
+            }
+        }
+
+        @media (max-width: 550px) {
+            .header h1 {
+                font-size: 23px;
+            }
+
+            .filters {
+                grid-template-columns: 1fr;
+            }
+
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .kpi-value {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <h1>Sprints Talent Analytics</h1>
+
+        <p>
+            Learner Performance, Cohort Insights,
+            and Employer Skills Intelligence
+        </p>
+
+        <p style="margin-top: 10px;">
+            Interactive analytics dashboard
+        </p>
+    </header>
+
+    <main class="container">
+
+        <h2 class="section-title">Dashboard Filters</h2>
+
+        <section class="filters">
+
+            <div class="filter-group">
+                <label for="trackFilter">
+                    Training Track
+                </label>
+
+                <select id="trackFilter">
+                    <option value="ALL">All Tracks</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="cohortFilter">
+                    Cohort
+                </label>
+
+                <select id="cohortFilter">
+                    <option value="ALL">All Cohorts</option>
+                </select>
+            </div>
+
+        </section>
+
+        <div class="button-row">
+            <button id="resetButton">
+                Reset Filters
+            </button>
+
+            <span class="status" id="filterStatus"></span>
+        </div>
+
+        <h2 class="section-title">Key Performance Indicators</h2>
+
+        <section class="kpi-grid">
+
+            <div class="kpi-card">
+                <div class="kpi-label">
+                    Learners in Selection
+                </div>
+
+                <div class="kpi-value" id="learnerKpi">
+                    --
+                </div>
+
+                <div class="kpi-description">
+                    Learners matching the selected filters
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-label">
+                    Training Tracks
+                </div>
+
+                <div class="kpi-value" id="trackKpi">
+                    --
+                </div>
+
+                <div class="kpi-description">
+                    Distinct tracks in the selection
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-label">
+                    Average Capstone Score
+                </div>
+
+                <div class="kpi-value" id="capstoneKpi">
+                    --
+                </div>
+
+                <div class="kpi-description">
+                    Calculated from available scores
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-label">
+                    Employer Roles
+                </div>
+
+                <div class="kpi-value" id="rolesKpi">
+                    --
+                </div>
+
+                <div class="kpi-description">
+                    Roles in the employer requirements dataset
+                </div>
+            </div>
+
+        </section>
+
+        <h2 class="section-title">
+            Learner Performance Analysis
+        </h2>
+
+        <section class="chart-grid">
+
+            <div class="chart-card">
+                <h3>Average Assessment Scores</h3>
+                <div id="assessmentChart" class="chart"></div>
+            </div>
+
+            <div class="chart-card">
+                <h3>Average Capstone Score by Track</h3>
+                <div id="trackChart" class="chart"></div>
+            </div>
+
+            <div class="chart-card full-width">
+                <h3>Engagement vs Capstone Performance</h3>
+                <div id="engagementChart" class="chart"></div>
+            </div>
+
+        </section>
+
+        <h2 class="section-title">
+            Employer Skills Intelligence
+        </h2>
+
+        <section class="chart-grid">
+
+            <div class="chart-card full-width">
+                <h3>Top 15 Most Requested Employer Skills</h3>
+                <div id="skillsChart" class="chart"></div>
+            </div>
+
+        </section>
+
+        <h2 class="section-title">
+            Learner Performance Details
+        </h2>
+
+        <section class="table-wrapper">
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Learner ID</th>
+                        <th>Track</th>
+                        <th>Cohort</th>
+                        <th>Engagement Score</th>
+                        <th>Average Module Score</th>
+                        <th>Capstone Score</th>
+                    </tr>
+                </thead>
+
+                <tbody id="learnerTableBody"></tbody>
+            </table>
+
+            <p class="status" id="tableStatus"></p>
+
+        </section>
+
+        <div class="footer">
+            Sprints Advanced Data Analysis Capstone |
+            Data-driven insights for learner development
+        </div>
+
+    </main>
+
+    <script>
+        const DATA = {"learners": [{"learner_id": "LRN-1001", "cohort_id": "2023-Q1-DA", "track_name": "Advanced Data Analysis", "engagement_score": 85.0, "average_module_score": 90.2, "capstone_score": 93.0, "module_1_score": 90.0, "module_2_score": 88.0, "module_3_score": 92.0, "module_4_score": 85.0, "module_5_score": 89.0, "module_6_score": 94.0, "module_7_score": 88.0, "module_8_score": 91.0, "module_9_score": 95.0, "module_10_score": 90.0}, {"learner_id": "LRN-1002", "cohort_id": "2023-Q1-DA", "track_name": "Advanced Data Analysis", "engagement_score": null, "average_module_score": 73.55555555555556, "capstone_score": 76.0, "module_1_score": 70.0, "module_2_score": 75.0, "module_3_score": null, "module_4_score": 65.0, "module_5_score": 80.0, "module_6_score": 77.0, "module_7_score": 81.0, "module_8_score": 72.0, "module_9_score": 68.0, "module_10_score": 74.0}, {"learner_id": "LRN-1003", "cohort_id": "2023-Q2-AI", "track_name": "AI & Machine Learning", "engagement_score": 92.0, "average_module_score": 94.7, "capstone_score": 96.0, "module_1_score": 95.0, "module_2_score": 96.0, "module_3_score": 91.0, "module_4_score": 98.0, "module_5_score": 94.0, "module_6_score": 99.0, "module_7_score": 90.0, "module_8_score": 92.0, "module_9_score": 95.0, "module_10_score": 97.0}, {"learner_id": "LRN-1004", "cohort_id": "2023-Q1-FS", "track_name": "Full Stack Web Development", "engagement_score": 45.0, "average_module_score": 58.9, "capstone_score": 58.0, "module_1_score": 60.0, "module_2_score": 55.0, "module_3_score": 58.0, "module_4_score": 62.0, "module_5_score": 59.0, "module_6_score": 61.0, "module_7_score": 65.0, "module_8_score": 54.0, "module_9_score": 55.0, "module_10_score": 60.0}, {"learner_id": "LRN-1005", "cohort_id": "2023-Q2-DA", "track_name": "Advanced Data Analysis", "engagement_score": 78.0, "average_module_score": 83.0, "capstone_score": 85.0, "module_1_score": 80.0, "module_2_score": 82.0, "module_3_score": 79.0, "module_4_score": 85.0, "module_5_score": 81.0, "module_6_score": null, "module_7_score": 86.0, "module_8_score": 88.0, "module_9_score": 82.0, "module_10_score": 84.0}, {"learner_id": "LRN-1006", "cohort_id": "2023-Q3-DA", "track_name": "Advanced Data Analysis", "engagement_score": null, "average_module_score": 88.9, "capstone_score": 90.0, "module_1_score": 88.0, "module_2_score": 85.0, "module_3_score": 89.0, "module_4_score": 90.0, "module_5_score": 92.0, "module_6_score": 85.0, "module_7_score": 87.0, "module_8_score": 88.0, "module_9_score": 91.0, "module_10_score": 94.0}, {"learner_id": "LRN-1007", "cohort_id": "2023-Q1-DA", "track_name": "Advanced Data Analysis", "engagement_score": 30.0, "average_module_score": 41.25, "capstone_score": null, "module_1_score": 40.0, "module_2_score": 45.0, "module_3_score": 42.0, "module_4_score": 38.0, "module_5_score": null, "module_6_score": null, "module_7_score": null, "module_8_score": null, "module_9_score": null, "module_10_score": null}, {"learner_id": "LRN-1008", "cohort_id": "2023-Q2-FS", "track_name": "Full Stack Web Development", "engagement_score": 88.0, "average_module_score": 90.7, "capstone_score": 91.0, "module_1_score": 92.0, "module_2_score": 90.0, "module_3_score": 85.0, "module_4_score": 89.0, "module_5_score": 94.0, "module_6_score": 91.0, "module_7_score": 88.0, "module_8_score": 93.0, "module_9_score": 95.0, "module_10_score": 90.0}, {"learner_id": "LRN-1009", "cohort_id": "2023-Q3-AI", "track_name": "AI & Machine Learning", "engagement_score": 95.0, "average_module_score": 97.1, "capstone_score": 99.0, "module_1_score": 98.0, "module_2_score": 97.0, "module_3_score": 95.0, "module_4_score": 99.0, "module_5_score": 96.0, "module_6_score": 98.0, "module_7_score": 94.0, "module_8_score": 97.0, "module_9_score": 99.0, "module_10_score": 98.0}, {"learner_id": "LRN-1010", "cohort_id": "2023-Q1-DA", "track_name": "Advanced Data Analysis", "engagement_score": 72.0, "average_module_score": 78.0, "capstone_score": 79.0, "module_1_score": 75.0, "module_2_score": 78.0, "module_3_score": 80.0, "module_4_score": 76.0, "module_5_score": 79.0, "module_6_score": 82.0, "module_7_score": 75.0, "module_8_score": 77.0, "module_9_score": 80.0, "module_10_score": 78.0}, {"learner_id": "LRN-1011", "cohort_id": "2023-Q2-DA", "track_name": "Advanced Data Analysis", "engagement_score": 82.0, "average_module_score": 86.0, "capstone_score": 87.0, "module_1_score": 85.0, "module_2_score": null, "module_3_score": 87.0, "module_4_score": 82.0, "module_5_score": 88.0, "module_6_score": 85.0, "module_7_score": 89.0, "module_8_score": 86.0, "module_9_score": 84.0, "module_10_score": 88.0}, {"learner_id": "LRN-1012", "cohort_id": "2023-Q1-AI", "track_name": "AI & Machine Learning", "engagement_score": null, "average_module_score": 88.9, "capstone_score": 90.0, "module_1_score": 88.0, "module_2_score": 90.0, "module_3_score": 85.0, "module_4_score": 87.0, "module_5_score": 92.0, "module_6_score": 89.0, "module_7_score": 85.0, "module_8_score": 88.0, "module_9_score": 91.0, "module_10_score": 94.0}, {"learner_id": "LRN-1013", "cohort_id": "2023-Q3-DA", "track_name": "Advanced Data Analysis", "engagement_score": 65.0, "average_module_score": 71.6, "capstone_score": 73.0, "module_1_score": 70.0, "module_2_score": 72.0, "module_3_score": 68.0, "module_4_score": 75.0, "module_5_score": 71.0, "module_6_score": 74.0, "module_7_score": 69.0, "module_8_score": 72.0, "module_9_score": 75.0, "module_10_score": 70.0}, {"learner_id": "LRN-1014", "cohort_id": "2023-Q2-FS", "track_name": "Full Stack Web Development", "engagement_score": null, "average_module_score": 85.6, "capstone_score": 86.0, "module_1_score": 85.0, "module_2_score": 82.0, "module_3_score": 88.0, "module_4_score": 84.0, "module_5_score": 89.0, "module_6_score": 86.0, "module_7_score": 82.0, "module_8_score": 85.0, "module_9_score": 87.0, "module_10_score": 88.0}, {"learner_id": "LRN-1015", "cohort_id": "2023-Q3-AI", "track_name": "AI & Machine Learning", "engagement_score": 91.0, "average_module_score": 93.4, "capstone_score": 95.0, "module_1_score": 93.0, "module_2_score": 91.0, "module_3_score": 95.0, "module_4_score": 92.0, "module_5_score": 94.0, "module_6_score": 96.0, "module_7_score": 91.0, "module_8_score": 93.0, "module_9_score": 95.0, "module_10_score": 94.0}, {"learner_id": "LRN-1016", "cohort_id": "2023-Q1-DA", "track_name": "Advanced Data Analysis", "engagement_score": 55.0, "average_module_score": 61.285714285714285, "capstone_score": null, "module_1_score": 60.0, "module_2_score": 62.0, "module_3_score": 58.0, "module_4_score": 65.0, "module_5_score": 61.0, "module_6_score": 64.0, "module_7_score": 59.0, "module_8_score": null, "module_9_score": null, "module_10_score": null}, {"learner_id": "LRN-1017", "cohort_id": "2023-Q2-DA", "track_name": "Advanced Data Analysis", "engagement_score": 89.0, "average_module_score": 91.6, "capstone_score": 92.0, "module_1_score": 91.0, "module_2_score": 88.0, "module_3_score": 93.0, "module_4_score": 90.0, "module_5_score": 94.0, "module_6_score": 92.0, "module_7_score": 89.0, "module_8_score": 91.0, "module_9_score": 95.0, "module_10_score": 93.0}, {"learner_id": "LRN-1018", "cohort_id": "2023-Q3-FS", "track_name": "Full Stack Web Development", "engagement_score": 77.0, "average_module_score": 80.7, "capstone_score": 81.0, "module_1_score": 80.0, "module_2_score": 78.0, "module_3_score": 82.0, "module_4_score": 79.0, "module_5_score": 83.0, "module_6_score": 81.0, "module_7_score": 78.0, "module_8_score": 80.0, "module_9_score": 84.0, "module_10_score": 82.0}, {"learner_id": "LRN-1019", "cohort_id": "2023-Q1-AI", "track_name": "AI & Machine Learning", "engagement_score": 94.0, "average_module_score": 96.7, "capstone_score": 98.0, "module_1_score": 96.0, "module_2_score": 95.0, "module_3_score": 98.0, "module_4_score": 96.0, "module_5_score": 97.0, "module_6_score": 99.0, "module_7_score": 95.0, "module_8_score": 97.0, "module_9_score": 98.0, "module_10_score": 96.0}, {"learner_id": "LRN-1020", "cohort_id": "2023-Q3-DA", "track_name": "Advanced Data Analysis", "engagement_score": null, "average_module_score": 73.1, "capstone_score": 74.0, "module_1_score": 68.0, "module_2_score": 70.0, "module_3_score": 75.0, "module_4_score": 72.0, "module_5_score": 76.0, "module_6_score": 74.0, "module_7_score": 71.0, "module_8_score": 73.0, "module_9_score": 77.0, "module_10_score": 75.0}, {"learner_id": "LRN-1021", "cohort_id": "2023-Q2-FS", "track_name": "Full Stack Web Development", "engagement_score": 84.0, "average_module_score": 87.7, "capstone_score": 88.0, "module_1_score": 86.0, "module_2_score": 85.0, "module_3_score": 89.0, "module_4_score": 87.0, "module_5_score": 90.0, "module_6_score": 88.0, "module_7_score": 85.0, "module_8_score": 87.0, "module_9_score": 91.0, "module_10_score": 89.0}, {"learner_id": "LRN-1022", "cohort_id": "2023-Q1-DA", "track_name": "Advanced Data Analysis", "engagement_score": 80.0, "average_module_score": 84.5, "capstone_score": 85.0, "module_1_score": 85.0, "module_2_score": 83.0, "module_3_score": 81.0, "module_4_score": 84.0, "module_5_score": 87.0, "module_6_score": 85.0, "module_7_score": 82.0, "module_8_score": 88.0, "module_9_score": 86.0, "module_10_score": 84.0}, {"learner_id": "LRN-1023", "cohort_id": "2023-Q2-AI", "track_name": "AI & Machine Learning", "engagement_score": 15.0, "average_module_score": 45.75, "capstone_score": null, "module_1_score": 45.0, "module_2_score": 40.0, "module_3_score": 48.0, "module_4_score": 50.0, "module_5_score": null, "module_6_score": null, "module_7_score": null, "module_8_score": null, "module_9_score": null, "module_10_score": null}, {"learner_id": "LRN-1024", "cohort_id": "2023-Q3-DA", "track_name": "Advanced Data Analysis", "engagement_score": 88.0, "average_module_score": 91.2, "capstone_score": 91.0, "module_1_score": 90.0, "module_2_score": 92.0, "module_3_score": 89.0, "module_4_score": 93.0, "module_5_score": 88.0, "module_6_score": 91.0, "module_7_score": 90.0, "module_8_score": 92.0, "module_9_score": 94.0, "module_10_score": 93.0}], "tracks": ["AI & Machine Learning", "Advanced Data Analysis", "Full Stack Web Development"], "cohorts": ["2023-Q1-AI", "2023-Q1-DA", "2023-Q1-FS", "2023-Q2-AI", "2023-Q2-DA", "2023-Q2-FS", "2023-Q3-AI", "2023-Q3-DA", "2023-Q3-FS"], "assessment_labels": ["Module 1", "Module 2", "Module 3", "Module 4", "Module 5", "Module 6", "Module 7", "Module 8", "Module 9", "Module 10", "Capstone"], "assessment_means": [79.58, 79.09, 80.3, 80.12, 85.18, 85.29, 82.68, 84.95, 86.52, 86.24, 86.05], "top_skills": [{"skill": "Python", "count": 50}, {"skill": "Pandas", "count": 20}, {"skill": "SQL", "count": 19}, {"skill": "Data Visualization", "count": 9}, {"skill": "Machine Learning", "count": 9}, {"skill": "NumPy", "count": 8}, {"skill": "Statistics", "count": 6}, {"skill": "Matplotlib", "count": 4}, {"skill": "Plotly", "count": 4}, {"skill": "Tableau", "count": 4}, {"skill": "A/B Testing", "count": 3}, {"skill": "Deep Learning", "count": 3}, {"skill": "Excel", "count": 3}, {"skill": "Seaborn", "count": 3}, {"skill": "Time Series Analysis", "count": 3}], "employer_roles": [{"role_id": "REQ-1001", "job_title": "Junior Data Analyst", "company_tier": "Tier 1", "minimum_assessment_threshold": 85.0}, {"role_id": "REQ-1002", "job_title": "Data Scientist I", "company_tier": "Tier 1", "minimum_assessment_threshold": 92.0}, {"role_id": "REQ-1003", "job_title": "BI Developer", "company_tier": "Tier 2", "minimum_assessment_threshold": 78.0}, {"role_id": "REQ-1004", "job_title": "Product Analyst", "company_tier": "Tier 1", "minimum_assessment_threshold": 88.0}, {"role_id": "REQ-1005", "job_title": "Analytics Engineer", "company_tier": "Tier 2", "minimum_assessment_threshold": 80.0}, {"role_id": "REQ-1006", "job_title": "Marketing Data Analyst", "company_tier": "Tier 3", "minimum_assessment_threshold": 70.0}, {"role_id": "REQ-1007", "job_title": "Machine Learning Engineer", "company_tier": "Tier 1", "minimum_assessment_threshold": 95.0}, {"role_id": "REQ-1008", "job_title": "Healthcare Data Analyst", "company_tier": "Tier 2", "minimum_assessment_threshold": 82.0}, {"role_id": "REQ-1009", "job_title": "Data Engineer I", "company_tier": "Tier 1", "minimum_assessment_threshold": 90.0}, {"role_id": "REQ-1010", "job_title": "Junior Quantitative Analyst", "company_tier": "Tier 1", "minimum_assessment_threshold": 94.0}, {"role_id": "REQ-1011", "job_title": "Customer Insights Analyst", "company_tier": "Tier 3", "minimum_assessment_threshold": 72.0}, {"role_id": "REQ-1012", "job_title": "Data Science Consultant", "company_tier": "Tier 1", "minimum_assessment_threshold": 89.0}, {"role_id": "REQ-1013", "job_title": "Risk Analyst", "company_tier": "Tier 2", "minimum_assessment_threshold": 80.0}, {"role_id": "REQ-1014", "job_title": "Operations Data Analyst", "company_tier": "Tier 2", "minimum_assessment_threshold": 75.0}, {"role_id": "REQ-1015", "job_title": "Fraud Detection Analyst", "company_tier": "Tier 1", "minimum_assessment_threshold": 91.0}, {"role_id": "REQ-1016", "job_title": "Junior Python Developer (Data)", "company_tier": "Tier 3", "minimum_assessment_threshold": 70.0}, {"role_id": "REQ-1017", "job_title": "HR Analytics Specialist", "company_tier": "Tier 2", "minimum_assessment_threshold": 76.0}, {"role_id": "REQ-1018", "job_title": "AI Research Assistant", "company_tier": "Tier 1", "minimum_assessment_threshold": 95.0}, {"role_id": "REQ-1019", "job_title": "Supply Chain Analyst", "company_tier": "Tier 2", "minimum_assessment_threshold": 78.0}, {"role_id": "REQ-1020", "job_title": "NLP Engineer", "company_tier": "Tier 1", "minimum_assessment_threshold": 93.0}, {"role_id": "REQ-1021", "job_title": "Sports Analytics Specialist", "company_tier": "Tier 3", "minimum_assessment_threshold": 74.0}, {"role_id": "REQ-1022", "job_title": "Game Data Analyst", "company_tier": "Tier 2", "minimum_assessment_threshold": 82.0}, {"role_id": "REQ-1023", "job_title": "Data Governance Analyst", "company_tier": "Tier 2", "minimum_assessment_threshold": 80.0}, {"role_id": "REQ-1024", "job_title": "Geospatial Data Analyst", "company_tier": "Tier 3", "minimum_assessment_threshold": 75.0}, {"role_id": "REQ-1025", "job_title": "Financial Data Analyst", "company_tier": "Tier 1", "minimum_assessment_threshold": 88.0}, {"role_id": "REQ-1026", "job_title": "EdTech Analytics Manager", "company_tier": "Tier 2", "minimum_assessment_threshold": 84.0}, {"role_id": "REQ-1027", "job_title": "Junior Data Engineer", "company_tier": "Tier 2", "minimum_assessment_threshold": 79.0}, {"role_id": "REQ-1028", "job_title": "Social Media Analyst", "company_tier": "Tier 3", "minimum_assessment_threshold": 70.0}, {"role_id": "REQ-1029", "job_title": "Credit Risk Modeler", "company_tier": "Tier 1", "minimum_assessment_threshold": 92.0}, {"role_id": "REQ-1030", "job_title": "Pricing Analyst", "company_tier": "Tier 2", "minimum_assessment_threshold": 81.0}, {"role_id": "REQ-1031", "job_title": "IoT Data Analyst", "company_tier": "Tier 1", "minimum_assessment_threshold": 89.0}, {"role_id": "REQ-1032", "job_title": "Sustainability Data Analyst", "company_tier": "Tier 3", "minimum_assessment_threshold": 73.0}, {"role_id": "REQ-1033", "job_title": "Computer Vision Engineer", "company_tier": "Tier 1", "minimum_assessment_threshold": 96.0}, {"role_id": "REQ-1034", "job_title": "Sales Operations Analyst", "company_tier": "Tier 2", "minimum_assessment_threshold": 77.0}, {"role_id": "REQ-1035", "job_title": "Revenue Assurance Analyst", "company_tier": "Tier 2", "minimum_assessment_threshold": 80.0}, {"role_id": "REQ-1036", "job_title": "Cybersecurity Data Analyst", "company_tier": "Tier 1", "minimum_assessment_threshold": 90.0}, {"role_id": "REQ-1037", "job_title": "Market Research Analyst", "company_tier": "Tier 3", "minimum_assessment_threshold": 71.0}, {"role_id": "REQ-1038", "job_title": "Clinical Data Analyst", "company_tier": "Tier 2", "minimum_assessment_threshold": 84.0}, {"role_id": "REQ-1039", "job_title": "Algorithmic Trader", "company_tier": "Tier 1", "minimum_assessment_threshold": 97.0}, {"role_id": "REQ-1040", "job_title": "Behavioral Data Scientist", "company_tier": "Tier 1", "minimum_assessment_threshold": 91.0}, {"role_id": "REQ-1041", "job_title": "Real Estate Data Analyst", "company_tier": "Tier 3", "minimum_assessment_threshold": 72.0}, {"role_id": "REQ-1042", "job_title": "Energy Trading Analyst", "company_tier": "Tier 2", "minimum_assessment_threshold": 83.0}, {"role_id": "REQ-1043", "job_title": "Bioinformatics Analyst", "company_tier": "Tier 1", "minimum_assessment_threshold": 92.0}, {"role_id": "REQ-1044", "job_title": "Quality Assurance Data Analyst", "company_tier": "Tier 3", "minimum_assessment_threshold": 70.0}, {"role_id": "REQ-1045", "job_title": "Recommendation Systems Engineer", "company_tier": "Tier 1", "minimum_assessment_threshold": 94.0}, {"role_id": "REQ-1046", "job_title": "Inventory Planning Analyst", "company_tier": "Tier 2", "minimum_assessment_threshold": 79.0}, {"role_id": "REQ-1047", "job_title": "Junior Big Data Developer", "company_tier": "Tier 2", "minimum_assessment_threshold": 81.0}, {"role_id": "REQ-1048", "job_title": "Public Policy Data Analyst", "company_tier": "Tier 3", "minimum_assessment_threshold": 75.0}, {"role_id": "REQ-1049", "job_title": "AgriTech Data Scientist", "company_tier": "Tier 2", "minimum_assessment_threshold": 86.0}, {"role_id": "REQ-1050", "job_title": "Chief Data Officer Apprentice", "company_tier": "Tier 1", "minimum_assessment_threshold": 95.0}], "total_roles": 50};
+
+        const COLORS = {
+            primary: "#176b87",
+            secondary: "#2a9d8f",
+            accent: "#e9c46a",
+            purple: "#6554c0",
+            grid: "#e2e8f0",
+            text: "#172b4d"
+        };
+
+        const PLOT_CONFIG = {
+            responsive: true,
+            displaylogo: false,
+            modeBarButtonsToRemove: ["lasso2d", "select2d"]
+        };
+
+        const PLOT_LAYOUT = {
+            autosize: true,
+            paper_bgcolor: "#ffffff",
+            plot_bgcolor: "#ffffff",
+            font: {
+                family: "Arial, Helvetica, sans-serif",
+                color: COLORS.text
+            },
+            margin: {
+                l: 55,
+                r: 25,
+                t: 25,
+                b: 65
+            },
+            xaxis: {
+                gridcolor: COLORS.grid,
+                automargin: true
+            },
+            yaxis: {
+                gridcolor: COLORS.grid,
+                automargin: true
+            },
+            showlegend: false
+        };
+
+        // ----------------------------------------------------
+        // 1. Initialize dropdowns
+        // ----------------------------------------------------
+
+        function populateDropdown(id, values) {
+            const dropdown = document.getElementById(id);
+
+            values.forEach(value => {
+                const option = document.createElement("option");
+
+                option.value = value;
+                option.textContent = value;
+
+                dropdown.appendChild(option);
+            });
+        }
+
+        populateDropdown("trackFilter", DATA.tracks);
+        populateDropdown("cohortFilter", DATA.cohorts);
+
+
+        // ----------------------------------------------------
+        // 2. Utility functions
+        // ----------------------------------------------------
+
+        function average(values) {
+            const valid = values.filter(
+                value =>
+                    value !== null &&
+                    value !== undefined &&
+                    Number.isFinite(Number(value))
+            );
+
+            if (valid.length === 0) {
+                return null;
+            }
+
+            const total = valid.reduce(
+                (sum, value) => sum + Number(value),
+                0
+            );
+
+            return total / valid.length;
+        }
+
+
+        function formatScore(value) {
+            if (value === null || value === undefined) {
+                return "N/A";
+            }
+
+            if (!Number.isFinite(Number(value))) {
+                return "N/A";
+            }
+
+            return Number(value).toFixed(2);
+        }
+
+
+        function formatNumber(value) {
+            return Number(value).toLocaleString("en-US");
+        }
+
+
+        function getFilteredLearners() {
+            const selectedTrack =
+                document.getElementById("trackFilter").value;
+
+            const selectedCohort =
+                document.getElementById("cohortFilter").value;
+
+            return DATA.learners.filter(learner => {
+                const trackMatches =
+                    selectedTrack === "ALL" ||
+                    learner.track_name === selectedTrack;
+
+                const cohortMatches =
+                    selectedCohort === "ALL" ||
+                    learner.cohort_id === selectedCohort;
+
+                return trackMatches && cohortMatches;
+            });
+        }
+
+
+        function cloneLayout(extra = {}) {
+            return {
+                ...PLOT_LAYOUT,
+                ...extra
+            };
+        }
+
+
+        // ----------------------------------------------------
+        // 3. KPI cards
+        // ----------------------------------------------------
+
+        function updateKPIs(learners) {
+            const distinctTracks = new Set(
+                learners
+                    .map(learner => learner.track_name)
+                    .filter(Boolean)
+            );
+
+            const capstoneAverage = average(
+                learners.map(learner => learner.capstone_score)
+            );
+
+            document.getElementById("learnerKpi").textContent =
+                formatNumber(learners.length);
+
+            document.getElementById("trackKpi").textContent =
+                formatNumber(distinctTracks.size);
+
+            document.getElementById("capstoneKpi").textContent =
+                formatScore(capstoneAverage);
+
+            document.getElementById("rolesKpi").textContent =
+                formatNumber(DATA.total_roles);
+
+            const trackValue =
+                document.getElementById("trackFilter").value;
+
+            const cohortValue =
+                document.getElementById("cohortFilter").value;
+
+            document.getElementById("filterStatus").textContent =
+                "Showing " + learners.length + " learner(s)" +
+                " | Track: " + trackValue +
+                " | Cohort: " + cohortValue;
+        }
+
+
+        // ----------------------------------------------------
+        // 4. Assessment chart
+        // ----------------------------------------------------
+
+        function updateAssessmentChart(learners) {
+            // Recalculate every assessment mean from the currently
+            // filtered learners. Missing scores are excluded.
+            const moduleColumns = [
+                "module_1_score", "module_2_score",
+                "module_3_score", "module_4_score",
+                "module_5_score", "module_6_score",
+                "module_7_score", "module_8_score",
+                "module_9_score", "module_10_score",
+                "capstone_score"
+            ];
+
+            const labels = [
+                "Module 1", "Module 2", "Module 3",
+                "Module 4", "Module 5", "Module 6",
+                "Module 7", "Module 8", "Module 9",
+                "Module 10", "Capstone"
+            ];
+
+            const means = moduleColumns.map(column =>
+                average(learners.map(learner => learner[column]))
+            );
+
+            const counts = moduleColumns.map(column =>
+                learners.filter(learner =>
+                    learner[column] !== null &&
+                    learner[column] !== undefined &&
+                    Number.isFinite(Number(learner[column]))
+                ).length
+            );
+
+            Plotly.react(
+                "assessmentChart",
+                [{
+                    type: "bar",
+                    x: labels,
+                    y: means,
+                    customdata: counts,
+                    marker: {
+                        color: labels.map((label, index) =>
+                            index === 10 ? COLORS.accent : COLORS.primary
+                        )
+                    },
+                    text: means.map(value =>
+                        value === null ? "" : formatScore(value)
+                    ),
+                    textposition: "outside",
+                    hovertemplate:
+                        "%{x}<br>Average score: %{y:.2f}" +
+                        "<br>Valid scores: %{customdata}<extra></extra>"
+                }],
+                cloneLayout({
+                    margin: {l: 55, r: 25, t: 35, b: 75},
+                    xaxis: {
+                        gridcolor: COLORS.grid,
+                        automargin: true,
+                        tickangle: -35
+                    },
+                    yaxis: {
+                        title: "Average Score",
+                        range: [0, 110],
+                        gridcolor: COLORS.grid
+                    }
+                }),
+                PLOT_CONFIG
+            );
+        }
+
+
+        // ----------------------------------------------------
+        // 5. Track comparison chart
+        // ----------------------------------------------------
+
+        function updateTrackChart(learners) {
+            const grouped = {};
+
+            learners.forEach(learner => {
+                const track = learner.track_name || "Unknown";
+
+                if (!grouped[track]) {
+                    grouped[track] = [];
+                }
+
+                grouped[track].push(learner.capstone_score);
+            });
+
+            const tracks = Object.keys(grouped).sort();
+
+            const scores = tracks.map(track =>
+                average(grouped[track])
+            );
+
+            Plotly.react(
+                "trackChart",
+                [{
+                    type: "bar",
+                    x: tracks,
+                    y: scores,
+                    marker: {
+                        color: COLORS.secondary
+                    },
+                    text: scores.map(formatScore),
+                    textposition: "outside",
+                    hovertemplate:
+                        "Track: %{x}<br>" +
+                        "Average capstone: %{y:.2f}<extra></extra>"
+                }],
+                cloneLayout({
+                    margin: {
+                        l: 50,
+                        r: 20,
+                        t: 25,
+                        b: 115
+                    },
+                    xaxis: {
+                        gridcolor: COLORS.grid,
+                        tickangle: -25,
+                        automargin: true
+                    },
+                    yaxis: {
+                        title: "Average Capstone Score",
+                        range: [0, 110],
+                        gridcolor: COLORS.grid
+                    }
+                }),
+                PLOT_CONFIG
+            );
+        }
+
+
+        // ----------------------------------------------------
+        // 6. Engagement vs capstone scatter chart
+        // ----------------------------------------------------
+
+        function updateEngagementChart(learners) {
+            const validLearners = learners.filter(learner =>
+                learner.engagement_score !== null &&
+                learner.capstone_score !== null
+            );
+
+            const trace = {
+                type: "scatter",
+                mode: "markers",
+                x: validLearners.map(
+                    learner => learner.engagement_score
+                ),
+                y: validLearners.map(
+                    learner => learner.capstone_score
+                ),
+                text: validLearners.map(
+                    learner => learner.learner_id
+                ),
+                marker: {
+                    size: 11,
+                    color: COLORS.purple,
+                    opacity: 0.8,
+                    line: {
+                        color: "#ffffff",
+                        width: 1
+                    }
+                },
+                hovertemplate:
+                    "Learner: %{text}<br>" +
+                    "Engagement: %{x:.2f}<br>" +
+                    "Capstone: %{y:.2f}<extra></extra>"
+            };
+
+            Plotly.react(
+                "engagementChart",
+                [trace],
+                cloneLayout({
+                    margin: {
+                        l: 65,
+                        r: 25,
+                        t: 25,
+                        b: 60
+                    },
+                    xaxis: {
+                        title: "Engagement Score",
+                        gridcolor: COLORS.grid
+                    },
+                    yaxis: {
+                        title: "Capstone Score",
+                        gridcolor: COLORS.grid
+                    }
+                }),
+                PLOT_CONFIG
+            );
+        }
+
+
+        // ----------------------------------------------------
+        // 7. Employer skills chart
+        // ----------------------------------------------------
+
+        function updateSkillsChart() {
+            const skills = DATA.top_skills;
+
+            const labels = skills
+                .map(item => item.skill)
+                .reverse();
+
+            const counts = skills
+                .map(item => item.count)
+                .reverse();
+
+            Plotly.react(
+                "skillsChart",
+                [{
+                    type: "bar",
+                    orientation: "h",
+                    y: labels,
+                    x: counts,
+                    marker: {
+                        color: labels.map(skill =>
+                            skill.toLowerCase() === "python"
+                                ? COLORS.accent
+                                : COLORS.primary
+                        )
+                    },
+                    text: counts,
+                    textposition: "outside",
+                    hovertemplate:
+                        "Skill: %{y}<br>" +
+                        "Roles requiring skill: %{x}<extra></extra>"
+                }],
+                cloneLayout({
+                    margin: {
+                        l: 145,
+                        r: 55,
+                        t: 20,
+                        b: 50
+                    },
+                    xaxis: {
+                        title: "Number of Roles",
+                        rangemode: "tozero",
+                        gridcolor: COLORS.grid
+                    },
+                    yaxis: {
+                        title: "Skill",
+                        automargin: true
+                    }
+                }),
+                PLOT_CONFIG
+            );
+        }
+
+
+        // ----------------------------------------------------
+        // 8. Learner details table
+        // ----------------------------------------------------
+
+        function updateLearnerTable(learners) {
+            const tableBody =
+                document.getElementById("learnerTableBody");
+
+            tableBody.replaceChildren();
+
+            learners.forEach(learner => {
+                const row = document.createElement("tr");
+
+                const values = [
+                    learner.learner_id,
+                    learner.track_name,
+                    learner.cohort_id,
+                    formatScore(learner.engagement_score),
+                    formatScore(learner.average_module_score),
+                    formatScore(learner.capstone_score)
+                ];
+
+                values.forEach(value => {
+                    const cell = document.createElement("td");
+
+                    cell.textContent = value ?? "N/A";
+
+                    row.appendChild(cell);
+                });
+
+                tableBody.appendChild(row);
+            });
+
+            document.getElementById("tableStatus").textContent =
+                "Displaying " + learners.length + " learner record(s).";
+        }
+
+
+        // ----------------------------------------------------
+        // 9. Refresh dashboard
+        // ----------------------------------------------------
+
+        function updateDashboard() {
+            const learners = getFilteredLearners();
+
+            updateKPIs(learners);
+            updateAssessmentChart(learners);
+            updateTrackChart(learners);
+            updateEngagementChart(learners);
+            updateLearnerTable(learners);
+        }
+
+
+        // ----------------------------------------------------
+        // 10. Event listeners
+        // ----------------------------------------------------
+
+        document
+            .getElementById("trackFilter")
+            .addEventListener("change", updateDashboard);
+
+        document
+            .getElementById("cohortFilter")
+            .addEventListener("change", updateDashboard);
+
+        document
+            .getElementById("resetButton")
+            .addEventListener("click", function() {
+                document.getElementById("trackFilter").value = "ALL";
+                document.getElementById("cohortFilter").value = "ALL";
+
+                updateDashboard();
+            });
+
+
+        // ----------------------------------------------------
+        // 11. Initial render
+        // ----------------------------------------------------
+
+        updateSkillsChart();
+        updateDashboard();
+    </script>
+
+</body>
+</html>

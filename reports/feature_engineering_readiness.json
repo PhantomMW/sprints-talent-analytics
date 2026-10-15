@@ -1,0 +1,170 @@
+{
+  "learner_data": {
+    "record_count": 24,
+    "column_count": 18,
+    "existing_features": {
+      "learner_identifiers": [
+        "learner_id",
+        "cohort_id"
+      ],
+      "categorical_features": [
+        "demographic_group",
+        "track_name"
+      ],
+      "date_features": [
+        "enrollment_date",
+        "graduation_date"
+      ],
+      "score_features": [
+        "engagement_score",
+        "module_1_score",
+        "module_2_score",
+        "module_3_score",
+        "module_4_score",
+        "module_5_score",
+        "module_6_score",
+        "module_7_score",
+        "module_8_score",
+        "module_9_score",
+        "module_10_score",
+        "capstone_score"
+      ],
+      "module_features": [
+        "module_1_score",
+        "module_2_score",
+        "module_3_score",
+        "module_4_score",
+        "module_5_score",
+        "module_6_score",
+        "module_7_score",
+        "module_8_score",
+        "module_9_score",
+        "module_10_score"
+      ]
+    },
+    "potential_features": [
+      {
+        "feature": "average_module_score",
+        "description": "Mean of available module scores for each learner.",
+        "requires_validation": "Confirm that module scores share the same scale."
+      },
+      {
+        "feature": "module_score_count",
+        "description": "Number of non-missing module scores for each learner.",
+        "requires_validation": "Interpret missing scores as unavailable, not zero."
+      },
+      {
+        "feature": "module_score_std",
+        "description": "Standard deviation of available module scores for each learner.",
+        "requires_validation": "Calculate only when enough module scores are present."
+      },
+      {
+        "feature": "enrollment_year",
+        "description": "Year extracted from enrollment_date.",
+        "requires_validation": "Confirm date parsing before deriving the feature."
+      },
+      {
+        "feature": "days_to_graduation",
+        "description": "Difference between graduation_date and enrollment_date.",
+        "requires_validation": "Only calculate when both dates are available."
+      }
+    ],
+    "module_score_missing_counts": {
+      "module_1_score": 0,
+      "module_2_score": 1,
+      "module_3_score": 1,
+      "module_4_score": 0,
+      "module_5_score": 2,
+      "module_6_score": 3,
+      "module_7_score": 2,
+      "module_8_score": 3,
+      "module_9_score": 3,
+      "module_10_score": 3
+    },
+    "module_score_valid_counts": {
+      "module_1_score": 24,
+      "module_2_score": 23,
+      "module_3_score": 23,
+      "module_4_score": 24,
+      "module_5_score": 22,
+      "module_6_score": 21,
+      "module_7_score": 22,
+      "module_8_score": 21,
+      "module_9_score": 21,
+      "module_10_score": 21
+    }
+  },
+  "employer_requirements": {
+    "role_count": 50,
+    "unique_skills": 60,
+    "skill_frequency": {
+      "Python": 50,
+      "Pandas": 20,
+      "SQL": 19,
+      "Data Visualization": 9,
+      "Machine Learning": 9,
+      "NumPy": 8,
+      "Statistics": 6,
+      "Matplotlib": 4,
+      "Plotly": 4,
+      "Tableau": 4,
+      "A/B Testing": 3,
+      "Deep Learning": 3,
+      "Excel": 3,
+      "Seaborn": 3,
+      "Time Series Analysis": 3,
+      "Anomaly Detection": 2,
+      "ETL": 2,
+      "Forecasting": 2,
+      "Optimization": 2,
+      "PyGWalker": 2,
+      "PySpark": 2,
+      "Scikit-Learn": 2,
+      "Text Analytics": 2,
+      "APIs": 1,
+      "Auditing": 1,
+      "AWS": 1,
+      "Big Data": 1,
+      "Biostatistics": 1,
+      "Cloud Basics": 1,
+      "Collaborative Filtering": 1,
+      "Communication": 1,
+      "Computer Vision": 1,
+      "Data Privacy": 1,
+      "Data Quality": 1,
+      "Data Scraping": 1,
+      "Data Strategy": 1,
+      "Demand Forecasting": 1,
+      "Demographics Analysis": 1,
+      "Documentation": 1,
+      "Finance": 1,
+      "Financial Modeling": 1,
+      "Genomics": 1,
+      "GIS": 1,
+      "Hadoop": 1,
+      "IoT Data": 1,
+      "Log Analysis": 1,
+      "Low Latency": 1,
+      "Mathematics": 1,
+      "Natural Language Processing": 1,
+      "OpenCV": 1,
+      "Process Optimization": 1,
+      "Psychometrics": 1,
+      "Quantitative Analysis": 1,
+      "Research": 1,
+      "Statistical Modeling": 1,
+      "Statistical Process Control": 1,
+      "Storytelling": 1,
+      "Survey Analysis": 1,
+      "TensorFlow": 1,
+      "Web Scraping": 1
+    },
+    "threshold_count": 50,
+    "threshold_minimum": 70.0,
+    "threshold_maximum": 97.0,
+    "priority_count": 50,
+    "priority_minimum": 0.35,
+    "priority_maximum": 1.0
+  },
+  "skill_mapping_status": "Not established: learner module scores do not directly identify individual skills."
+}

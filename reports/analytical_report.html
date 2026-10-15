@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Sprints Talent Analytics analytical report">
+<title>Sprints Talent Analytics | Analytical Report</title>
+<style>
+:root {
+ --navy:#102A43; --blue:#176B87; --teal:#239B91; --text:#243B53;
+ --muted:#627D98; --border:#D9E2EC; --bg:#F3F6FA; --surface:#FFFFFF;
+}
+* { box-sizing:border-box; }
+html { scroll-behavior:smooth; scroll-padding-top:20px; }
+body { margin:0; background:var(--bg); color:var(--text);
+ font:14px/1.7 "Segoe UI",Arial,Helvetica,sans-serif; }
+a { color:var(--blue); text-decoration:none; }
+.cover { color:#fff; padding:66px 7% 58px; background:
+ radial-gradient(circle at 90% 15%,rgba(35,155,145,.45),transparent 32%),
+ linear-gradient(125deg,#102A43 0%,#183B56 58%,#176B87 100%); }
+.cover-inner { max-width:1180px; margin:auto; }
+.brand { display:flex; align-items:center; gap:12px; margin-bottom:42px;
+ color:#D7F5F0; font-size:12px; font-weight:800; letter-spacing:2px; }
+.brand-mark { display:grid; place-items:center; width:36px; height:36px;
+ border:1px solid #7192A6; border-radius:11px; background:#24485E; }
+.eyebrow { color:#7FE0D2; font-size:11px; font-weight:900; letter-spacing:2px; }
+.cover h1 { margin:10px 0 0; font-size:clamp(36px,5vw,58px);
+ letter-spacing:-1.6px; line-height:1.1; }
+.cover-subtitle { max-width:740px; color:#D8E7F0; font-size:16px; margin:20px 0 0; }
+.page-container { width:min(1180px,calc(100% - 40px)); margin:28px auto 54px; }
+.contents { display:grid; grid-template-columns:1fr 2fr; gap:24px; padding:25px;
+ background:#fff; border:1px solid var(--border); border-radius:16px; margin-bottom:26px; }
+.contents h2 { margin:0 0 6px; color:var(--navy); font-size:19px; }
+.contents p { margin:0; color:var(--muted); font-size:12px; }
+.contents-links { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+.contents-links a { display:flex; gap:8px; align-items:center; padding:8px;
+ background:#F6F9FC; border-radius:8px; color:var(--text); font-size:11px;
+ font-weight:700; line-height:1.4; }
+.contents-links span { color:var(--teal); font-weight:900; flex-shrink:0; }
+.report-section { background:#fff; border:1px solid var(--border); border-radius:16px;
+ padding:30px; margin-bottom:25px; scroll-margin-top:18px; }
+.section-title { display:flex; gap:14px; align-items:flex-start; margin-bottom:23px; }
+.section-accent { flex:0 0 5px; height:43px; border-radius:8px;
+ background:linear-gradient(180deg,var(--teal),var(--blue)); }
+.section-title h2 { margin:0; color:var(--navy); font-size:24px; line-height:1.3; letter-spacing:-.5px; }
+.section-title p { margin:7px 0 0; color:var(--muted); font-size:12px; }
+.executive-note { padding:20px 23px; border:1px solid #D5EAE8; border-radius:12px;
+ background:linear-gradient(120deg,#F0FAF8,#F5FAFD); margin-bottom:20px; }
+.executive-note p { margin:8px 0 0; color:#334E68; }
+.metrics-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:13px; }
+.metric { position:relative; overflow:hidden; min-height:130px; padding:19px;
+ border:1px solid var(--border); border-radius:12px; background:#fff; break-inside:avoid; }
+.metric:before { content:""; position:absolute; top:0; left:0; height:4px; width:100%; background:var(--blue); }
+.metric.teal:before { background:var(--teal); } .metric.navy:before { background:var(--navy); }
+.metric-label { color:var(--muted); font-size:10px; font-weight:800; letter-spacing:.6px; text-transform:uppercase; }
+.metric-value { margin-top:10px; color:var(--navy); font-size:30px; font-weight:900; line-height:1.2; }
+.metric-detail { margin-top:7px; color:var(--muted); font-size:11px; }
+.two-col { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:22px; align-items:start; }
+h3 { color:var(--navy); font-size:15px; line-height:1.45; margin:0 0 12px; }
+.subheading { margin-top:25px; }
+.table-wrap { width:100%; overflow-x:auto; border:1px solid var(--border); border-radius:10px; }
+table { width:100%; border-collapse:collapse; font-size:11px; line-height:1.55; }
+thead { display:table-header-group; }
+th { padding:11px 12px; background:#EDF4F8; color:var(--navy); text-align:left;
+ font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.3px; }
+td { padding:10px 12px; border-top:1px solid #E9EFF5; color:#334E68;
+ vertical-align:top; overflow-wrap:anywhere; }
+tbody tr:nth-child(even) { background:#F8FAFC; }
+.callout { margin-top:18px; padding:16px 19px; border-left:4px solid var(--blue);
+ border-radius:8px; background:#EAF3F8; break-inside:avoid; }
+.callout.warning { border-left-color:#B7791F; background:#FFFAF0; }
+.callout.info { border-left-color:var(--teal); background:#EFFAF8; }
+.callout strong { display:block; color:var(--navy); font-size:12px; }
+.callout p { margin:5px 0 0; color:#486581; font-size:11px; }
+.cards-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:13px; }
+.info-card { display:flex; gap:13px; padding:17px; border:1px solid var(--border);
+ border-radius:11px; break-inside:avoid; page-break-inside:avoid; }
+.info-card h3 { margin:0 0 5px; font-size:13px; }
+.info-card p { margin:0; color:var(--muted); font-size:11px; line-height:1.75; }
+.number { display:grid; place-items:center; flex:0 0 34px; height:34px;
+ border-radius:10px; color:var(--blue); background:#EAF3F8; font-weight:900; font-size:11px; }
+.teal-number { color:#16805D; background:#E5F5F2; border-radius:50%; }
+.small-note { color:var(--muted); font-size:11px; margin:12px 0 0; }
+.details { margin-top:20px; border:1px solid var(--border); border-radius:10px; padding:14px; }
+.details summary { cursor:pointer; color:var(--navy); font-weight:800; }
+.empty { padding:18px; border:1px dashed var(--border); border-radius:9px; color:var(--muted); }
+.footer { padding:22px 10px 0; border-top:1px solid var(--border); color:var(--muted);
+ text-align:center; font-size:11px; }
+.footer strong { color:var(--navy); }
+.top { position:fixed; right:18px; bottom:18px; display:grid; place-items:center;
+ width:40px; height:40px; background:#fff; border:1px solid var(--border);
+ border-radius:11px; color:var(--blue); box-shadow:0 4px 15px #102A431A; font-size:20px; }
+@media(max-width:900px) {
+ .contents { grid-template-columns:1fr; } .contents-links { grid-template-columns:repeat(2,minmax(0,1fr)); }
+ .two-col { grid-template-columns:1fr; } .metrics-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+ .cards-grid { grid-template-columns:1fr; } .report-section { padding:23px; }
+}
+@media(max-width:560px) {
+ .cover { padding:42px 22px; } .page-container { width:calc(100% - 22px); }
+ .contents { padding:18px; } .contents-links { grid-template-columns:1fr; }
+ .report-section { padding:18px; } .section-title h2 { font-size:21px; }
+ .metrics-grid { gap:9px; } .metric { padding:13px; min-height:118px; }
+ .metric-value { font-size:24px; } th,td { padding:8px; }
+}
+.print-btn { position:fixed; right:18px; bottom:68px; display:flex; align-items:center;
+ gap:6px; padding:10px 18px; background:var(--teal); color:#fff; border:none; border-radius:11px;
+ font-size:13px; font-weight:700; cursor:pointer; box-shadow:0 4px 15px #102A431A;
+ transition:background .2s; z-index:10; }
+.print-btn:hover { background:var(--blue); }
+@media print {
+ @page { size:A4; margin:13mm 12mm 15mm; }
+ body { background:#fff; font-size:9pt; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+ .cover { padding:31mm 15mm 25mm; break-after:page; page-break-after:always; }
+ .cover h1 { font-size:34pt; } .cover-subtitle { font-size:11pt; }
+ .page-container { width:100%; margin:0; }
+ .contents { display:block; border-radius:0; padding:7mm; margin-bottom:8mm;
+   break-after:page; page-break-after:always; }
+ .contents-links { grid-template-columns:repeat(2,minmax(0,1fr)); margin-top:5mm; }
+ .report-section { border-radius:0; box-shadow:none; padding:7mm; margin-bottom:7mm; }
+ .section-title { margin-bottom:5mm; break-after:avoid; page-break-after:avoid; }
+ .section-title h2 { font-size:17pt; }
+ h3 { break-after:avoid; page-break-after:avoid; }
+ .metrics-grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:3mm; }
+ .metric { min-height:28mm; padding:3.5mm; }
+ .metric-value { font-size:19pt; }
+ .two-col { grid-template-columns:repeat(2,minmax(0,1fr)); gap:5mm; }
+ .cards-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:3mm; }
+ .info-card,.metric,.callout { break-inside:avoid; page-break-inside:avoid; }
+ .table-wrap { overflow:visible; }
+ table { font-size:7.5pt; }
+ th,td { padding:2mm; }
+ tr { break-inside:avoid; page-break-inside:avoid; }
+ .top { display:none; }
+  .print-btn { display:none; }
+ .footer { margin-top:6mm; }
+}
+</style>
+</head>
+<body id="top">
+<header class="cover">
+ <div class="cover-inner">
+  <div class="brand"><span class="brand-mark">ST</span><span>SPRINTS TALENT ANALYTICS</span></div>
+  <div class="eyebrow">ADVANCED DATA ANALYSIS CAPSTONE</div>
+  <h1>Analytical<br>Report</h1>
+  <p class="cover-subtitle">Learner Performance, Data Quality, Feature Engineering, and Employer Skills Intelligence</p>
+ </div>
+</header>
+<main class="page-container">
+ <nav class="contents">
+  <div><h2>Report Contents</h2><p>Navigate through the analysis, findings, recommendations, and limitations.</p></div>
+  <div class="contents-links"><a href="#executive"><span>01</span>Executive Summary</a><a href="#overview"><span>02</span>Dataset Overview</a><a href="#cleaning"><span>03</span>Data Quality &amp; Cleaning</a><a href="#eda"><span>04</span>Exploratory Data Analysis</a><a href="#features"><span>05</span>Feature Engineering</a><a href="#employers"><span>06</span>Employer Requirements</a><a href="#findings"><span>07</span>Key Findings</a><a href="#recommendations"><span>08</span>Recommendations</a><a href="#limitations"><span>09</span>Limitations &amp; Reproducibility</a></div>
+ </nav>
+ 
+    <section class="report-section" id="executive">
+      <div class="section-title">
+        <span class="section-accent"></span>
+        <div>
+          <h2>Executive Summary</h2>
+          <p>A concise overview of the project and its analytical scope.</p>
+        </div>
+      </div>
+      
+      <div class="executive-note">
+        <span class="eyebrow">PROJECT OVERVIEW</span>
+        <p>This report summarizes learner performance, data quality, engineered
+        features, and employer skill requirements. The analysis is descriptive
+        and exploratory; results should be interpreted within the documented
+        sample size, missing values, and skill-mapping limitations.</p>
+      </div>
+      <div class="metrics-grid">
+    <article class="metric blue">
+      <div class="metric-label">Learner Records</div>
+      <div class="metric-value">24</div>
+      <div class="metric-detail">Cleaned learner rows</div>
+    </article>
+    
+    <article class="metric teal">
+      <div class="metric-label">Training Tracks</div>
+      <div class="metric-value">3</div>
+      <div class="metric-detail">Distinct tracks</div>
+    </article>
+    
+    <article class="metric navy">
+      <div class="metric-label">Cohorts</div>
+      <div class="metric-value">9</div>
+      <div class="metric-detail">Distinct cohorts</div>
+    </article>
+    
+    <article class="metric blue">
+      <div class="metric-label">Employer Roles</div>
+      <div class="metric-value">50</div>
+      <div class="metric-detail">Role records analyzed</div>
+    </article>
+    
+    <article class="metric teal">
+      <div class="metric-label">Distinct Skills</div>
+      <div class="metric-value">60</div>
+      <div class="metric-detail">Skills listed across roles</div>
+    </article>
+    
+    <article class="metric navy">
+      <div class="metric-label">Feature Columns</div>
+      <div class="metric-value">23</div>
+      <div class="metric-detail">Engineered dataset columns</div>
+    </article>
+    </div>
+    </section>
+    
+    <section class="report-section" id="overview">
+      <div class="section-title">
+        <span class="section-accent"></span>
+        <div>
+          <h2>Dataset Overview</h2>
+          <p>Structure and coverage of the available datasets.</p>
+        </div>
+      </div>
+      
+      <div class="two-col">
+        <div><h3>Dataset Inventory</h3>
+          <div class="table-wrap"><table><thead><tr><th>Property</th><th>Value</th></tr></thead><tbody><tr><td>Clean learner dataset</td><td>sprints_cohort_clean.csv</td></tr><tr><td>Learner records</td><td>24</td></tr><tr><td>Learner columns</td><td>18</td></tr><tr><td>Feature dataset</td><td>sprints_cohort_features.csv</td></tr><tr><td>Feature records</td><td>24</td></tr><tr><td>Feature columns</td><td>23</td></tr><tr><td>Employer roles</td><td>50</td></tr><tr><td>Unique learner IDs</td><td>24</td></tr></tbody></table></div>
+        </div>
+        <div><h3>Learners by Training Track</h3>
+          <div class="table-wrap"><table><thead><tr><th>Training Track</th><th>Learners</th></tr></thead><tbody><tr><td>Advanced Data Analysis</td><td>13</td></tr><tr><td>AI &amp; Machine Learning</td><td>6</td></tr><tr><td>Full Stack Web Development</td><td>5</td></tr></tbody></table></div>
+        </div>
+      </div>
+      <h3 class="subheading">Learners by Cohort</h3>
+      <div class="table-wrap"><table><thead><tr><th>Cohort</th><th>Learners</th></tr></thead><tbody><tr><td>2023-Q1-AI</td><td>2</td></tr><tr><td>2023-Q1-DA</td><td>6</td></tr><tr><td>2023-Q1-FS</td><td>1</td></tr><tr><td>2023-Q2-AI</td><td>2</td></tr><tr><td>2023-Q2-DA</td><td>3</td></tr><tr><td>2023-Q2-FS</td><td>3</td></tr><tr><td>2023-Q3-AI</td><td>2</td></tr><tr><td>2023-Q3-DA</td><td>4</td></tr><tr><td>2023-Q3-FS</td><td>1</td></tr></tbody></table></div>
+      <p class="small-note">Learner records and employer role records are analyzed
+      independently. The report does not assume that each learner corresponds
+      to a particular employer role.</p>
+    
+    </section>
+    
+    <section class="report-section" id="cleaning">
+      <div class="section-title">
+        <span class="section-accent"></span>
+        <div>
+          <h2>Data Quality &amp; Cleaning</h2>
+          <p>Cleaning decisions and remaining data-quality considerations.</p>
+        </div>
+      </div>
+      
+      <h3>Cleaning Summary</h3><div class="table-wrap"><table><thead><tr><th>Cleaning Report Field</th><th>Recorded Value</th></tr></thead><tbody><tr><td>input_records</td><td>26</td></tr><tr><td>input_columns</td><td>18</td></tr><tr><td>structural_repairs</td><td>{&#x27;line_number&#x27;: 26, &#x27;learner_id&#x27;: &#x27;LRN-1023&#x27;, &#x27;original_fields&#x27;: 19, &#x27;final_fields&#x27;: 18}</td></tr><tr><td>duplicate_rows_removed</td><td>2</td></tr><tr><td>invalid_engagement_values</td><td>{&#x27;learner_id&#x27;: &#x27;LRN-1002&#x27;, &#x27;original_value&#x27;: 999.0, &#x27;action&#x27;: &#x27;Converted to missing value&#x27;}, {&#x27;learner_id&#x27;: &#x27;LRN-1006&#x27;, &#x27;original_value&#x27;: -20.0, &#x27;action&#x27;: &#x27;Converted to missing value&#x27;}, {&#x27;learner_id&#x27;: &#x27;LRN-1012&#x27;, &#x27;original_value&#x27;: 1500.0, &#x27;action&#x27;: &#x27;Converted to missing value&#x27;}, {&#x27;learner_id&#x27;: &#x27;LRN-1020&#x27;, &#x27;original_value&#x27;: -5.0, &#x27;action&#x27;: &#x27;Converted to missing value&#x27;}</td></tr><tr><td>numeric_conversion_failures / engagement_score</td><td>0</td></tr><tr><td>numeric_conversion_failures / module_1_score</td><td>0</td></tr><tr><td>numeric_conversion_failures / module_2_score</td><td>0</td></tr><tr><td>numeric_conversion_failures / module_3_score</td><td>0</td></tr><tr><td>numeric_conversion_failures / module_4_score</td><td>0</td></tr><tr><td>numeric_conversion_failures / module_5_score</td><td>0</td></tr><tr><td>numeric_conversion_failures / module_6_score</td><td>0</td></tr><tr><td>numeric_conversion_failures / module_7_score</td><td>0</td></tr><tr><td>numeric_conversion_failures / module_8_score</td><td>0</td></tr><tr><td>numeric_conversion_failures / module_9_score</td><td>0</td></tr><tr><td>numeric_conversion_failures / module_10_score</td><td>0</td></tr><tr><td>numeric_conversion_failures / capstone_score</td><td>0</td></tr><tr><td>date_conversion_failures / enrollment_date</td><td>0</td></tr><tr><td>date_conversion_failures / graduation_date</td><td>0</td></tr><tr><td>missing_values_before_cleaning / learner_id</td><td>0</td></tr><tr><td>missing_values_before_cleaning / cohort_id</td><td>0</td></tr><tr><td>missing_values_before_cleaning / enrollment_date</td><td>0</td></tr><tr><td>missing_values_before_cleaning / graduation_date</td><td>2</td></tr><tr><td>missing_values_before_cleaning / demographic_group</td><td>0</td></tr><tr><td>missing_values_before_cleaning / track_name</td><td>0</td></tr><tr><td>missing_values_before_cleaning / engagement_score</td><td>1</td></tr><tr><td>missing_values_before_cleaning / module_1_score</td><td>0</td></tr><tr><td>missing_values_before_cleaning / module_2_score</td><td>1</td></tr><tr><td>missing_values_before_cleaning / module_3_score</td><td>1</td></tr><tr><td>missing_values_before_cleaning / module_4_score</td><td>0</td></tr><tr><td>missing_values_before_cleaning / module_5_score</td><td>2</td></tr><tr><td>missing_values_before_cleaning / module_6_score</td><td>3</td></tr><tr><td>missing_values_before_cleaning / module_7_score</td><td>2</td></tr><tr><td>missing_values_before_cleaning / module_8_score</td><td>3</td></tr><tr><td>missing_values_before_cleaning / module_9_score</td><td>3</td></tr><tr><td>missing_values_before_cleaning / module_10_score</td><td>3</td></tr><tr><td>missing_values_before_cleaning / capstone_score</td><td>3</td></tr><tr><td>missing_values_after_cleaning / learner_id</td><td>0</td></tr><tr><td>missing_values_after_cleaning / cohort_id</td><td>0</td></tr><tr><td>missing_values_after_cleaning / enrollment_date</td><td>0</td></tr><tr><td>missing_values_after_cleaning / graduation_date</td><td>2</td></tr><tr><td>missing_values_after_cleaning / demographic_group</td><td>0</td></tr><tr><td>missing_values_after_cleaning / track_name</td><td>0</td></tr><tr><td>missing_values_after_cleaning / engagement_score</td><td>5</td></tr><tr><td>missing_values_after_cleaning / module_1_score</td><td>0</td></tr><tr><td>missing_values_after_cleaning / module_2_score</td><td>1</td></tr><tr><td>missing_values_after_cleaning / module_3_score</td><td>1</td></tr><tr><td>missing_values_after_cleaning / module_4_score</td><td>0</td></tr><tr><td>missing_values_after_cleaning / module_5_score</td><td>2</td></tr><tr><td>missing_values_after_cleaning / module_6_score</td><td>3</td></tr><tr><td>missing_values_after_cleaning / module_7_score</td><td>2</td></tr><tr><td>missing_values_after_cleaning / module_8_score</td><td>3</td></tr><tr><td>missing_values_after_cleaning / module_9_score</td><td>3</td></tr><tr><td>missing_values_after_cleaning / module_10_score</td><td>3</td></tr><tr><td>missing_values_after_cleaning / capstone_score</td><td>3</td></tr><tr><td>output_records</td><td>24</td></tr><tr><td>output_columns</td><td>18</td></tr></tbody></table></div>
+      
+    <aside class="callout warning">
+      <strong>Score range assumption</strong>
+      <p>The engagement score range of 0–100 is provisional and should be confirmed against the data dictionary or source documentation.</p>
+    </aside>
+    
+      <h3 class="subheading">Missing Values by Column</h3><div class="table-wrap"><table><thead><tr><th>Column</th><th>Missing Values</th><th>Missing (%)</th></tr></thead><tbody><tr><td>graduation_date</td><td>2</td><td>8.33</td></tr><tr><td>engagement_score</td><td>5</td><td>20.83</td></tr><tr><td>module_2_score</td><td>1</td><td>4.17</td></tr><tr><td>module_3_score</td><td>1</td><td>4.17</td></tr><tr><td>module_5_score</td><td>2</td><td>8.33</td></tr><tr><td>module_6_score</td><td>3</td><td>12.50</td></tr><tr><td>module_7_score</td><td>2</td><td>8.33</td></tr><tr><td>module_8_score</td><td>3</td><td>12.50</td></tr><tr><td>module_9_score</td><td>3</td><td>12.50</td></tr><tr><td>module_10_score</td><td>3</td><td>12.50</td></tr><tr><td>capstone_score</td><td>3</td><td>12.50</td></tr></tbody></table></div>
+      
+    <aside class="callout info">
+      <strong>Missing values are not zero</strong>
+      <p>The cleaned dataset contains 28 missing cell values. Missing scores and dates are preserved where imputation has not been justified.</p>
+    </aside>
+    
+      <h3 class="subheading">Cleaning Interpretation</h3>
+      <p>Exact duplicate rows are removed while retaining one occurrence.
+      Numeric conversion, engagement-range checks, date parsing, and structural
+      CSV repairs are documented by the cleaning pipeline. The original source
+      CSV is not overwritten.</p>
+    
+    </section>
+    
+    <section class="report-section" id="eda">
+      <div class="section-title">
+        <span class="section-accent"></span>
+        <div>
+          <h2>Exploratory Data Analysis</h2>
+          <p>Descriptive statistics and patterns in the learner data.</p>
+        </div>
+      </div>
+      
+      <p>Assessment means and medians use available numeric values. The valid
+      count is shown for each score so that differences in data coverage remain
+      visible.</p>
+      <h3>Assessment Score Summary</h3><div class="table-wrap"><table><thead><tr><th>Assessment</th><th>Mean</th><th>Median</th><th>Available Scores</th></tr></thead><tbody><tr><td>Engagement Score</td><td>73.95</td><td>82</td><td>19</td></tr><tr><td>Module 1 Score</td><td>79.58</td><td>85</td><td>24</td></tr><tr><td>Module 2 Score</td><td>79.09</td><td>83</td><td>23</td></tr><tr><td>Module 3 Score</td><td>80.30</td><td>85</td><td>23</td></tr><tr><td>Module 4 Score</td><td>80.12</td><td>84.50</td><td>24</td></tr><tr><td>Module 5 Score</td><td>85.18</td><td>88.50</td><td>22</td></tr><tr><td>Module 6 Score</td><td>85.29</td><td>86</td><td>21</td></tr><tr><td>Module 7 Score</td><td>82.68</td><td>85.50</td><td>22</td></tr><tr><td>Module 8 Score</td><td>84.95</td><td>88</td><td>21</td></tr><tr><td>Module 9 Score</td><td>86.52</td><td>91</td><td>21</td></tr><tr><td>Module 10 Score</td><td>86.24</td><td>89</td><td>21</td></tr><tr><td>Capstone Score</td><td>86.05</td><td>88</td><td>21</td></tr></tbody></table></div>
+      
+    <aside class="callout info">
+      <strong>Engagement and Capstone relationship</strong>
+      <p>The Pearson correlation is 0.992, calculated from 16 complete records. Correlation does not establish causation, and the limited sample restricts generalization.</p>
+    </aside>
+    
+      <h3 class="subheading">Interpretation</h3>
+      <p>Differences between module averages are descriptive comparisons.
+      Without information about assessment difficulty, grading criteria,
+      learner progression, and comparable cohorts, they should not be treated
+      as definitive evidence of improvement or decline.</p>
+    
+    </section>
+    
+    <section class="report-section" id="features">
+      <div class="section-title">
+        <span class="section-accent"></span>
+        <div>
+          <h2>Feature Engineering</h2>
+          <p>Derived features, validation checks, and skill-mapping limitations.</p>
+        </div>
+      </div>
+      
+      <p>Feature engineering derives additional variables from the cleaned
+      learner dataset to support performance analysis and completeness checks.</p>
+      <h3>Derived Features</h3><div class="table-wrap"><table><thead><tr><th>Feature</th><th>Description</th><th>Minimum</th><th>Maximum</th><th>Missing</th></tr></thead><tbody><tr><td>average_module_score</td><td>Mean of available module scores per learner.</td><td>41.25</td><td>97.10</td><td>0</td></tr><tr><td>module_score_count</td><td>Count of non-missing module scores per learner.</td><td>4</td><td>10</td><td>N/A</td></tr><tr><td>module_score_std</td><td>Sample standard deviation of available module scores per learner.</td><td>—</td><td>—</td><td>0</td></tr><tr><td>enrollment_year</td><td>Year extracted from enrollment_date.</td><td>—</td><td>—</td><td>0</td></tr><tr><td>days_to_graduation</td><td>Days between enrollment and graduation, when both dates are available and the duration is non-negative.</td><td>186</td><td>192</td><td>2</td></tr></tbody></table></div>
+      <h3 class="subheading">Feature Engineering Summary</h3><div class="table-wrap"><table><thead><tr><th>Validation Check</th><th>Result</th></tr></thead><tbody><tr><td>Input records</td><td>24</td></tr><tr><td>Output records</td><td>24</td></tr><tr><td>Input columns</td><td>18</td></tr><tr><td>Output columns</td><td>23</td></tr><tr><td>Duplicate rows in output</td><td>0</td></tr></tbody></table></div>
+      <h3 class="subheading">Missing Values in Feature Dataset</h3><div class="table-wrap"><table><thead><tr><th>Feature Column</th><th>Missing Values</th></tr></thead><tbody><tr><td>graduation_date</td><td>2</td></tr><tr><td>engagement_score</td><td>5</td></tr><tr><td>module_2_score</td><td>1</td></tr><tr><td>module_3_score</td><td>1</td></tr><tr><td>module_5_score</td><td>2</td></tr><tr><td>module_6_score</td><td>3</td></tr><tr><td>module_7_score</td><td>2</td></tr><tr><td>module_8_score</td><td>3</td></tr><tr><td>module_9_score</td><td>3</td></tr><tr><td>module_10_score</td><td>3</td></tr><tr><td>capstone_score</td><td>3</td></tr><tr><td>days_to_graduation</td><td>2</td></tr></tbody></table></div>
+      
+    <aside class="callout warning">
+      <strong>Skill mapping limitation</strong>
+      <p>Not performed. Module scores do not directly identify individual employer-required skills. Do not infer individual skill proficiency from general module scores without a validated assessment-to-skill mapping.</p>
+    </aside>
+    
+      <h3 class="subheading">Feature Readiness Notes</h3><div class="table-wrap"><table><thead><tr><th>Potential Feature</th><th>Purpose</th><th>Validation Required</th></tr></thead><tbody><tr><td>average_module_score</td><td>Mean of available module scores for each learner.</td><td>Confirm that module scores share the same scale.</td></tr><tr><td>module_score_count</td><td>Number of non-missing module scores for each learner.</td><td>Interpret missing scores as unavailable, not zero.</td></tr><tr><td>module_score_std</td><td>Standard deviation of available module scores for each learner.</td><td>Calculate only when enough module scores are present.</td></tr><tr><td>enrollment_year</td><td>Year extracted from enrollment_date.</td><td>Confirm date parsing before deriving the feature.</td></tr><tr><td>days_to_graduation</td><td>Difference between graduation_date and enrollment_date.</td><td>Only calculate when both dates are available.</td></tr></tbody></table></div>
+    
+    </section>
+    
+    <section class="report-section" id="employers">
+      <div class="section-title">
+        <span class="section-accent"></span>
+        <div>
+          <h2>Employer Requirements Analysis</h2>
+          <p>Employer role distribution, thresholds, and requested skills.</p>
+        </div>
+      </div>
+      
+      <p>Employer requirements are analyzed separately from learner assessment
+      results. Skill frequency counts the number of role records listing each skill.</p>
+      <div class="two-col">
+        <div><h3>Company Tier Distribution</h3><div class="table-wrap"><table><thead><tr><th>Company Tier</th><th>Number of Roles</th></tr></thead><tbody><tr><td>Tier 1</td><td>20</td></tr><tr><td>Tier 2</td><td>19</td></tr><tr><td>Tier 3</td><td>11</td></tr></tbody></table></div></div>
+        <div><h3>Assessment Thresholds</h3><div class="table-wrap"><table><thead><tr><th>Threshold Metric</th><th>Value</th></tr></thead><tbody><tr><td>Valid threshold values</td><td>50</td></tr><tr><td>Minimum threshold</td><td>70</td></tr><tr><td>Median threshold</td><td>82</td></tr><tr><td>Mean threshold</td><td>83.06</td></tr><tr><td>Maximum threshold</td><td>97</td></tr></tbody></table></div></div>
+      </div>
+      <h3 class="subheading">Top 15 Most Requested Skills</h3><div class="table-wrap"><table><thead><tr><th>Rank</th><th>Skill</th><th>Number of Roles</th></tr></thead><tbody><tr><td>1</td><td>Python</td><td>50</td></tr><tr><td>2</td><td>Pandas</td><td>20</td></tr><tr><td>3</td><td>SQL</td><td>19</td></tr><tr><td>4</td><td>Data Visualization</td><td>9</td></tr><tr><td>5</td><td>Machine Learning</td><td>9</td></tr><tr><td>6</td><td>NumPy</td><td>8</td></tr><tr><td>7</td><td>Statistics</td><td>6</td></tr><tr><td>8</td><td>Matplotlib</td><td>4</td></tr><tr><td>9</td><td>Plotly</td><td>4</td></tr><tr><td>10</td><td>Tableau</td><td>4</td></tr><tr><td>11</td><td>A/B Testing</td><td>3</td></tr><tr><td>12</td><td>Deep Learning</td><td>3</td></tr><tr><td>13</td><td>Excel</td><td>3</td></tr><tr><td>14</td><td>Seaborn</td><td>3</td></tr><tr><td>15</td><td>Time Series Analysis</td><td>3</td></tr></tbody></table></div>
+      <p class="small-note">Skill frequency represents the number of role records
+      listing a skill. It is not a direct measure of market-wide demand, hiring
+      probability, salary impact, or learner proficiency.</p>
+      <details class="details">
+        <summary>View saved employer analysis details</summary>
+        <div class="table-wrap"><table><thead><tr><th>Saved Analysis Metric</th><th>Value</th></tr></thead><tbody><tr><td>source_file</td><td>data\employer_partner_requirements.json</td></tr><tr><td>total_requirement_records</td><td>50</td></tr><tr><td>structure / fields</td><td>company_tier, industry, job_title, minimum_assessment_threshold, priority_weight, required_skills, role_id</td></tr><tr><td>structure / missing_fields / company_tier</td><td>0</td></tr><tr><td>structure / missing_fields / industry</td><td>0</td></tr><tr><td>structure / missing_fields / job_title</td><td>0</td></tr><tr><td>structure / missing_fields / minimum_assessment_threshold</td><td>0</td></tr><tr><td>structure / missing_fields / priority_weight</td><td>0</td></tr><tr><td>structure / missing_fields / required_skills</td><td>0</td></tr><tr><td>structure / missing_fields / role_id</td><td>0</td></tr><tr><td>structure / non_object_records</td><td>0</td></tr><tr><td>role_id_validation / total_records</td><td>50</td></tr><tr><td>role_id_validation / records_with_role_id</td><td>50</td></tr><tr><td>role_id_validation / missing_role_id_records</td><td>0</td></tr><tr><td>role_id_validation / unique_role_ids</td><td>50</td></tr><tr><td>skills / unique_skill_count</td><td>60</td></tr><tr><td>skills / roles_without_skills</td><td>0</td></tr><tr><td>skills / malformed_skill_lists</td><td>0</td></tr><tr><td>skills / skill_frequency / Python</td><td>50</td></tr><tr><td>skills / skill_frequency / Pandas</td><td>20</td></tr><tr><td>skills / skill_frequency / SQL</td><td>19</td></tr><tr><td>skills / skill_frequency / Data Visualization</td><td>9</td></tr><tr><td>skills / skill_frequency / Machine Learning</td><td>9</td></tr><tr><td>skills / skill_frequency / NumPy</td><td>8</td></tr><tr><td>skills / skill_frequency / Statistics</td><td>6</td></tr><tr><td>skills / skill_frequency / Matplotlib</td><td>4</td></tr><tr><td>skills / skill_frequency / Plotly</td><td>4</td></tr><tr><td>skills / skill_frequency / Tableau</td><td>4</td></tr><tr><td>skills / skill_frequency / A/B Testing</td><td>3</td></tr><tr><td>skills / skill_frequency / Deep Learning</td><td>3</td></tr><tr><td>skills / skill_frequency / Excel</td><td>3</td></tr><tr><td>skills / skill_frequency / Seaborn</td><td>3</td></tr><tr><td>skills / skill_frequency / Time Series Analysis</td><td>3</td></tr><tr><td>skills / skill_frequency / Anomaly Detection</td><td>2</td></tr><tr><td>skills / skill_frequency / ETL</td><td>2</td></tr><tr><td>skills / skill_frequency / Forecasting</td><td>2</td></tr><tr><td>skills / skill_frequency / Optimization</td><td>2</td></tr><tr><td>skills / skill_frequency / PyGWalker</td><td>2</td></tr><tr><td>skills / skill_frequency / PySpark</td><td>2</td></tr><tr><td>skills / skill_frequency / Scikit-Learn</td><td>2</td></tr><tr><td>skills / skill_frequency / Text Analytics</td><td>2</td></tr><tr><td>skills / skill_frequency / APIs</td><td>1</td></tr><tr><td>skills / skill_frequency / Auditing</td><td>1</td></tr><tr><td>skills / skill_frequency / AWS</td><td>1</td></tr><tr><td>skills / skill_frequency / Big Data</td><td>1</td></tr><tr><td>skills / skill_frequency / Biostatistics</td><td>1</td></tr><tr><td>skills / skill_frequency / Cloud Basics</td><td>1</td></tr><tr><td>skills / skill_frequency / Collaborative Filtering</td><td>1</td></tr><tr><td>skills / skill_frequency / Communication</td><td>1</td></tr><tr><td>skills / skill_frequency / Computer Vision</td><td>1</td></tr><tr><td>skills / skill_frequency / Data Privacy</td><td>1</td></tr><tr><td>skills / skill_frequency / Data Quality</td><td>1</td></tr><tr><td>skills / skill_frequency / Data Scraping</td><td>1</td></tr><tr><td>skills / skill_frequency / Data Strategy</td><td>1</td></tr><tr><td>skills / skill_frequency / Demand Forecasting</td><td>1</td></tr><tr><td>skills / skill_frequency / Demographics Analysis</td><td>1</td></tr><tr><td>skills / skill_frequency / Documentation</td><td>1</td></tr><tr><td>skills / skill_frequency / Finance</td><td>1</td></tr><tr><td>skills / skill_frequency / Financial Modeling</td><td>1</td></tr><tr><td>skills / skill_frequency / Genomics</td><td>1</td></tr><tr><td>skills / skill_frequency / GIS</td><td>1</td></tr><tr><td>skills / skill_frequency / Hadoop</td><td>1</td></tr><tr><td>skills / skill_frequency / IoT Data</td><td>1</td></tr><tr><td>skills / skill_frequency / Log Analysis</td><td>1</td></tr><tr><td>skills / skill_frequency / Low Latency</td><td>1</td></tr><tr><td>skills / skill_frequency / Mathematics</td><td>1</td></tr><tr><td>skills / skill_frequency / Natural Language Processing</td><td>1</td></tr><tr><td>skills / skill_frequency / OpenCV</td><td>1</td></tr><tr><td>skills / skill_frequency / Process Optimization</td><td>1</td></tr><tr><td>skills / skill_frequency / Psychometrics</td><td>1</td></tr><tr><td>skills / skill_frequency / Quantitative Analysis</td><td>1</td></tr><tr><td>skills / skill_frequency / Research</td><td>1</td></tr><tr><td>skills / skill_frequency / Statistical Modeling</td><td>1</td></tr><tr><td>skills / skill_frequency / Statistical Process Control</td><td>1</td></tr><tr><td>skills / skill_frequency / Storytelling</td><td>1</td></tr><tr><td>skills / skill_frequency / Survey Analysis</td><td>1</td></tr><tr><td>skills / skill_frequency / TensorFlow</td><td>1</td></tr><tr><td>skills / skill_frequency / Web Scraping</td><td>1</td></tr><tr><td>category_summaries / job_title / AgriTech Data Scientist</td><td>1</td></tr><tr><td>category_summaries / job_title / AI Research Assistant</td><td>1</td></tr><tr><td>category_summaries / job_title / Algorithmic Trader</td><td>1</td></tr><tr><td>category_summaries / job_title / Analytics Engineer</td><td>1</td></tr><tr><td>category_summaries / job_title / Behavioral Data Scientist</td><td>1</td></tr><tr><td>category_summaries / job_title / BI Developer</td><td>1</td></tr><tr><td>category_summaries / job_title / Bioinformatics Analyst</td><td>1</td></tr><tr><td>category_summaries / job_title / Chief Data Officer Apprentice</td><td>1</td></tr><tr><td>category_summaries / job_title / Clinical Data Analyst</td><td>1</td></tr><tr><td>category_summaries / job_title / Computer Vision Engineer</td><td>1</td></tr><tr><td>category_summaries / job_title / Credit Risk Modeler</td><td>1</td></tr><tr><td>category_summaries / job_title / Customer Insights Analyst</td><td>1</td></tr><tr><td>category_summaries / job_title / Cybersecurity Data Analyst</td><td>1</td></tr><tr><td>category_summaries / job_title / Data Engineer I</td><td>1</td></tr><tr><td>category_summaries / job_title / Data Governance Analyst</td><td>1</td></tr><tr><td>category_summaries / job_title / Data Science Consultant</td><td>1</td></tr><tr><td>category_summaries / job_title / Data Scientist I</td><td>1</td></tr><tr><td>category_summaries / job_title / EdTech Analytics Manager</td><td>1</td></tr><tr><td>category_summaries / job_title / Energy Trading Analyst</td><td>1</td></tr><tr><td>category_summaries / job_title / Financial Data Analyst</td><td>1</td></tr><tr><td>category_summaries / job_title / Fraud Detection Analyst</td><td>1</td></tr><tr><td>category_summaries / job_title / Game Data Analyst</td><td>1</td></tr><tr><td>category_summaries / job_title / Geospatial Data Analyst</td><td>1</td></tr><tr><td>category_summaries / job_title / Healthcare Data Analyst</td><td>1</td></tr><tr><td>category_summaries / job_title / HR Analytics Specialist</td><td>1</td></tr><tr><td>category_summaries / job_title / Inventory Planning Analyst</td><td>1</td></tr><tr><td>category_summaries / job_title / IoT Data Analyst</td><td>1</td></tr><tr><td>category_summaries / job_title / Junior Big Data Developer</td><td>1</td></tr><tr><td>category_summaries / job_title / Junior Data Analyst</td><td>1</td></tr><tr><td>category_summaries / job_title / Junior Data Engineer</td><td>1</td></tr><tr><td>category_summaries / job_title / Junior Python Developer (Data)</td><td>1</td></tr><tr><td>category_summaries / job_title / Junior Quantitative Analyst</td><td>1</td></tr><tr><td>category_summaries / job_title / Machine Learning Engineer</td><td>1</td></tr><tr><td>category_summaries / job_title / Market Research Analyst</td><td>1</td></tr><tr><td>category_summaries / job_title / Marketing Data Analyst</td><td>1</td></tr><tr><td>category_summaries / job_title / NLP Engineer</td><td>1</td></tr><tr><td>category_summaries / job_title / Operations Data Analyst</td><td>1</td></tr><tr><td>category_summaries / job_title / Pricing Analyst</td><td>1</td></tr><tr><td>category_summaries / job_title / Product Analyst</td><td>1</td></tr><tr><td>category_summaries / job_title / Public Policy Data Analyst</td><td>1</td></tr><tr><td>category_summaries / job_title / Quality Assurance Data Analyst</td><td>1</td></tr><tr><td>category_summaries / job_title / Real Estate Data Analyst</td><td>1</td></tr><tr><td>category_summaries / job_title / Recommendation Systems Engineer</td><td>1</td></tr><tr><td>category_summaries / job_title / Revenue Assurance Analyst</td><td>1</td></tr><tr><td>category_summaries / job_title / Risk Analyst</td><td>1</td></tr><tr><td>category_summaries / job_title / Sales Operations Analyst</td><td>1</td></tr><tr><td>category_summaries / job_title / Social Media Analyst</td><td>1</td></tr><tr><td>category_summaries / job_title / Sports Analytics Specialist</td><td>1</td></tr><tr><td>category_summaries / job_title / Supply Chain Analyst</td><td>1</td></tr><tr><td>category_summaries / job_title / Sustainability Data Analyst</td><td>1</td></tr><tr><td>category_summaries / company_tier / Tier 1</td><td>20</td></tr><tr><td>category_summaries / company_tier / Tier 2</td><td>19</td></tr><tr><td>category_summaries / company_tier / Tier 3</td><td>11</td></tr><tr><td>category_summaries / industry / Retail</td><td>4</td></tr><tr><td>category_summaries / industry / SaaS</td><td>3</td></tr><tr><td>category_summaries / industry / Banking</td><td>2</td></tr><tr><td>category_summaries / industry / Consulting</td><td>2</td></tr><tr><td>category_summaries / industry / Digital Agency</td><td>2</td></tr><tr><td>category_summaries / industry / E-Commerce</td><td>2</td></tr><tr><td>category_summaries / industry / FinTech</td><td>2</td></tr><tr><td>category_summaries / industry / Investment Banking</td><td>2</td></tr><tr><td>category_summaries / industry / Logistics</td><td>2</td></tr><tr><td>category_summaries / industry / Manufacturing</td><td>2</td></tr><tr><td>category_summaries / industry / Telecommunications</td><td>2</td></tr><tr><td>category_summaries / industry / Agriculture</td><td>1</td></tr><tr><td>category_summaries / industry / Artificial Intelligence</td><td>1</td></tr><tr><td>category_summaries / industry / Autonomous Vehicles</td><td>1</td></tr><tr><td>category_summaries / industry / Biotechnology</td><td>1</td></tr><tr><td>category_summaries / industry / Cloud Infrastructure</td><td>1</td></tr><tr><td>category_summaries / industry / Conglomerate</td><td>1</td></tr><tr><td>category_summaries / industry / Cybersecurity</td><td>1</td></tr><tr><td>category_summaries / industry / Education</td><td>1</td></tr><tr><td>category_summaries / industry / Energy</td><td>1</td></tr><tr><td>category_summaries / industry / Entertainment</td><td>1</td></tr><tr><td>category_summaries / industry / Gaming</td><td>1</td></tr><tr><td>category_summaries / industry / Government</td><td>1</td></tr><tr><td>category_summaries / industry / Healthcare</td><td>1</td></tr><tr><td>category_summaries / industry / Hedge Fund</td><td>1</td></tr><tr><td>category_summaries / industry / Human Resources</td><td>1</td></tr><tr><td>category_summaries / industry / Insurance</td><td>1</td></tr><tr><td>category_summaries / industry / IT Services</td><td>1</td></tr><tr><td>category_summaries / industry / Non-Profit</td><td>1</td></tr><tr><td>category_summaries / industry / Pharmaceuticals</td><td>1</td></tr><tr><td>category_summaries / industry / Real Estate</td><td>1</td></tr><tr><td>category_summaries / industry / Research Institute</td><td>1</td></tr><tr><td>category_summaries / industry / Social Media</td><td>1</td></tr><tr><td>category_summaries / industry / Software Services</td><td>1</td></tr><tr><td>category_summaries / industry / Streaming Services</td><td>1</td></tr><tr><td>category_summaries / industry / Urban Planning</td><td>1</td></tr><tr><td>numeric_summary / priority_weight / valid_count</td><td>50</td></tr><tr><td>numeric_summary / priority_weight / invalid_or_missing_count</td><td>0</td></tr><tr><td>numeric_summary / priority_weight / minimum</td><td>0.35</td></tr><tr><td>numeric_summary / priority_weight / maximum</td><td>1.0</td></tr><tr><td>numeric_summary / priority_weight / mean</td><td>0.751</td></tr><tr><td>numeric_summary / priority_weight / median</td><td>0.77</td></tr><tr><td>numeric_summary / minimum_assessment_threshold / valid_count</td><td>50</td></tr><tr><td>numeric_summary / minimum_assessment_threshold / invalid_or_missing_count</td><td>0</td></tr><tr><td>numeric_summary / minimum_assessment_threshold / minimum</td><td>70.0</td></tr><tr><td>numeric_summary / minimum_assessment_threshold / maximum</td><td>97.0</td></tr><tr><td>numeric_summary / minimum_assessment_threshold / mean</td><td>83.06</td></tr><tr><td>numeric_summary / minimum_assessment_threshold / median</td><td>82.0</td></tr><tr><td>consistency_checks / all_records_have_role_id</td><td>True</td></tr><tr><td>consistency_checks / all_role_ids_are_unique</td><td>True</td></tr><tr><td>consistency_checks / all_records_have_required_skills</td><td>True</td></tr><tr><td>consistency_checks / all_records_have_job_title</td><td>True</td></tr><tr><td>consistency_checks / all_records_have_company_tier</td><td>True</td></tr></tbody></table></div>
+      </details>
+    
+    </section>
+    
+    <section class="report-section" id="findings">
+      <div class="section-title">
+        <span class="section-accent"></span>
+        <div>
+          <h2>Key Findings</h2>
+          <p>Evidence-based findings from the current analysis.</p>
+        </div>
+      </div>
+      <div class="cards-grid">
+          <article class="info-card">
+            <div class="number">01</div>
+            <div><h3>Learner distribution</h3><p>The cleaned dataset contains 24 learner records across 3 training tracks and 9 cohorts. This describes the available dataset, not all learners.</p></div>
+          </article>
+        
+          <article class="info-card">
+            <div class="number">02</div>
+            <div><h3>Assessment performance</h3><p>The average module score ranges from 41.25 to 97.10. These values describe this sample and are not universal performance benchmarks.</p></div>
+          </article>
+        
+          <article class="info-card">
+            <div class="number">03</div>
+            <div><h3>Most requested skill</h3><p>Python appears in 50 employer role records out of 50. This reflects the provided requirements file.</p></div>
+          </article>
+        
+          <article class="info-card">
+            <div class="number">04</div>
+            <div><h3>Data completeness</h3><p>Some assessment scores and graduation dates remain missing. Comparisons should account for valid observations for each metric.</p></div>
+          </article>
+        
+          <article class="info-card">
+            <div class="number">05</div>
+            <div><h3>Skill mapping</h3><p>Learner module scores are not directly mapped to individual employer-required skills, so skill-level proficiency cannot be inferred.</p></div>
+          </article>
+        </div>
+    </section>
+    
+    <section class="report-section" id="recommendations">
+      <div class="section-title">
+        <span class="section-accent"></span>
+        <div>
+          <h2>Recommendations</h2>
+          <p>Practical next steps to improve data quality and analytical value.</p>
+        </div>
+      </div>
+      <div class="cards-grid">
+          <article class="info-card recommendation">
+            <div class="number teal-number">1</div>
+            <div><h3>Prioritize data quality</h3><p>Keep an audit trail for duplicate rows, invalid values, missing assessments, and structural CSV issues.</p></div>
+          </article>
+        
+          <article class="info-card recommendation">
+            <div class="number teal-number">2</div>
+            <div><h3>Validate score definitions</h3><p>Confirm the engagement score range and assessment scoring rules with the dataset owner.</p></div>
+          </article>
+        
+          <article class="info-card recommendation">
+            <div class="number teal-number">3</div>
+            <div><h3>Investigate missing values</h3><p>Ask why assessment scores and graduation dates are missing. Do not replace missing scores with zero without an approved rule.</p></div>
+          </article>
+        
+          <article class="info-card recommendation">
+            <div class="number teal-number">4</div>
+            <div><h3>Use employer requirements for curriculum review</h3><p>Use frequently requested skills to guide curriculum discussions while considering role-specific needs and priority weights.</p></div>
+          </article>
+        
+          <article class="info-card recommendation">
+            <div class="number teal-number">5</div>
+            <div><h3>Establish a validated skill mapping</h3><p>Document which assessments measure each skill and the evidence needed to assign proficiency.</p></div>
+          </article>
+        
+          <article class="info-card recommendation">
+            <div class="number teal-number">6</div>
+            <div><h3>Expand the evidence base</h3><p>Repeat the analysis on larger cohorts and multiple time periods before making broad claims.</p></div>
+          </article>
+        </div>
+    </section>
+    
+    <section class="report-section" id="limitations">
+      <div class="section-title">
+        <span class="section-accent"></span>
+        <div>
+          <h2>Limitations &amp; Reproducibility</h2>
+          <p>Interpretation boundaries and the artifacts used to build this report.</p>
+        </div>
+      </div>
+      
+      <h3>Limitations and Future Improvements</h3>
+      <div class="table-wrap"><table><thead><tr><th>Limitation</th><th>Interpretation</th></tr></thead><tbody><tr><td>Sample size</td><td>The learner sample is limited; subgroup comparisons are exploratory.</td></tr><tr><td>Missing values</td><td>Incomplete assessment records can change the number of observations used in each statistic.</td></tr><tr><td>Score range assumption</td><td>The expected engagement score range should be confirmed with the data owner.</td></tr><tr><td>Skill mapping</td><td>Module scores are not a validated substitute for skill-level assessments.</td></tr><tr><td>Employer coverage</td><td>The employer file represents the roles included in this dataset, not necessarily the entire job market.</td></tr><tr><td>Further validation</td><td>Repeat the analysis with additional cohorts, documented scoring rules, and validated skill mappings.</td></tr></tbody></table></div>
+      <h3 class="subheading">Reproducibility: Input Artifacts</h3>
+      <div class="table-wrap"><table><thead><tr><th>Artifact</th><th>Project Path</th></tr></thead><tbody><tr><td>Cleaned learner data</td><td>data/sprints_cohort_clean.csv</td></tr><tr><td>Engineered features</td><td>data/sprints_cohort_features.csv</td></tr><tr><td>Employer requirements</td><td>data/employer_partner_requirements.json</td></tr><tr><td>Cleaning report</td><td>reports/cleaning_report.json</td></tr><tr><td>EDA summary</td><td>reports/eda_summary.json</td></tr><tr><td>Employer analysis</td><td>reports/employer_requirements_summary.json</td></tr><tr><td>Feature readiness</td><td>reports/feature_engineering_readiness.json</td></tr><tr><td>Feature engineering report</td><td>reports/feature_engineering_report.json</td></tr></tbody></table></div>
+      
+    <aside class="callout info">
+      <strong>Reproducibility note</strong>
+      <p>The report is generated from saved JSON analysis reports and processed datasets. Rerun upstream analysis scripts before regenerating the HTML report.</p>
+    </aside>
+    
+    
+    </section>
+    
+ <footer class="footer"><strong>Sprints Talent Analytics</strong><br>
+ Advanced Data Analysis Capstone<br>
+ Generated from saved analysis outputs and processed datasets.<br>
+ Interpret findings within the documented data and sample limitations.</footer>
+</main>
+<button class="print-btn" onclick="window.print()" aria-label="Save as PDF">&#128438; Save as PDF</button>
+<a class="top" href="#top" aria-label="Back to top">↑</a>
+</body>
+</html>

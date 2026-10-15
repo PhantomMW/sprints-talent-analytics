@@ -1,0 +1,67 @@
+{
+  "input_file": "data\\sprints_cohort_clean.csv",
+  "output_file": "data\\sprints_cohort_features.csv",
+  "input_records": 24,
+  "output_records": 24,
+  "input_columns": 18,
+  "output_columns": 23,
+  "records_changed": 0,
+  "duplicate_rows_in_output": 0,
+  "derived_features": {
+    "average_module_score": {
+      "description": "Mean of available module scores per learner.",
+      "missing_count": 0,
+      "minimum": 41.25,
+      "maximum": 97.1
+    },
+    "module_score_count": {
+      "description": "Count of non-missing module scores per learner.",
+      "minimum": 4,
+      "maximum": 10
+    },
+    "module_score_std": {
+      "description": "Sample standard deviation of available module scores per learner.",
+      "missing_count": 0
+    },
+    "enrollment_year": {
+      "description": "Year extracted from enrollment_date.",
+      "missing_count": 0,
+      "distribution": {
+        "2023": 24
+      }
+    },
+    "days_to_graduation": {
+      "description": "Days between enrollment and graduation, when both dates are available and the duration is non-negative.",
+      "missing_count": 2,
+      "invalid_negative_durations": 0,
+      "minimum": 186,
+      "maximum": 192
+    }
+  },
+  "missing_values_after_feature_engineering": {
+    "learner_id": 0,
+    "cohort_id": 0,
+    "enrollment_date": 0,
+    "graduation_date": 2,
+    "demographic_group": 0,
+    "track_name": 0,
+    "engagement_score": 5,
+    "module_1_score": 0,
+    "module_2_score": 1,
+    "module_3_score": 1,
+    "module_4_score": 0,
+    "module_5_score": 2,
+    "module_6_score": 3,
+    "module_7_score": 2,
+    "module_8_score": 3,
+    "module_9_score": 3,
+    "module_10_score": 3,
+    "capstone_score": 3,
+    "average_module_score": 0,
+    "module_score_count": 0,
+    "module_score_std": 0,
+    "enrollment_year": 0,
+    "days_to_graduation": 2
+  },
+  "skill_mapping_status": "Not performed. Module scores do not directly identify individual employer-required skills."
+}
